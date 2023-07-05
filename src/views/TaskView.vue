@@ -23,7 +23,14 @@
         class="work-select"
         v-model="selectedWorkId"
         placeholder="Select Work"
-      ></el-select>
+      >
+        <el-option
+          v-for="item in workSelectOptions"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        />
+      </el-select>
     </div>
 
     <!-- Onput Container -->
@@ -39,8 +46,9 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, onMounted, watchEffect } from "vue";
 import Papa from "papaparse";
+import Api from "@/model/api.js";
 
 // Input 元素
 const inputCsv = ref(null);
@@ -54,12 +62,21 @@ const selectedWorkId = ref("");
 // 数据：WorkList
 const workList = ref([]);
 
+// 生命周期函数
+onMounted(async () => {
+  workList.value = await Api.getWorkList();
+});
+
 // 显示在 work-select 上的选项
 const workSelectOptions = computed(() =>
-  workList.map(work => {
-    return { value: work.id, label: work.name };
+  workList.value.map(work => {
+    return { value: work.objectId, label: work.name };
   })
 );
+
+watchEffect(() => {
+  console.log("selectedWorkId", selectedWorkId.value);
+});
 
 // 输入事件：上传文件发生改变
 const inputFileChanged = async event => {
