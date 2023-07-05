@@ -11,6 +11,7 @@
         type="file"
         ref="inputCsv"
         @change="inputFileChanged($event)"
+        accept=".csv"
       />
       <div class="download_temtplate-btn">Download Input Template</div>
     </div>
@@ -39,6 +40,7 @@
 
 <script setup>
 import { computed, ref } from "vue";
+import Papa from "papaparse";
 
 // Input 元素
 const inputCsv = ref(null);
@@ -60,7 +62,21 @@ const workSelectOptions = computed(() =>
 );
 
 // 输入事件：上传文件发生改变
-const inputFileChanged = async e => {};
+const inputFileChanged = async event => {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      Papa.parse(e.target.result, {
+        header: true,
+        complete: function (results) {
+          console.log(results.data);
+        }
+      });
+    };
+    reader.readAsText(file);
+  }
+};
 </script>
 
 <style lang="scss" scoped>
