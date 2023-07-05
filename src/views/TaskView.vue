@@ -13,7 +13,9 @@
         @change="inputFileChanged($event)"
         accept=".csv"
       />
-      <div class="download_temtplate-btn">Download Input Template</div>
+      <div class="download_temtplate-btn" @click="clickDownloadInputTemplate">
+        Download Input Template
+      </div>
     </div>
 
     <!-- Work Container -->
@@ -21,7 +23,7 @@
       <div class="work-title">Work</div>
       <el-select
         class="work-select"
-        v-model="selectedWorkId"
+        v-model="selectedWork"
         placeholder="Select Work"
       >
         <el-option
@@ -37,7 +39,7 @@
     <div class="output-container">
       <div class="output-title">Output</div>
       <div class="output-file">Download Output File</div>
-      <div class="view-log-btn">View Log</div>
+      <div class="view-log-btn" @click="click_viewLog">View Log</div>
     </div>
 
     <!-- Control Button -->
@@ -49,7 +51,7 @@
 import { computed, ref, onMounted, watchEffect } from "vue";
 import Papa from "papaparse";
 import Api from "@/model/api.js";
-
+import { ElMessage } from "element-plus";
 // Input 元素
 const inputCsv = ref(null);
 
@@ -57,10 +59,23 @@ const inputCsv = ref(null);
 const taskId = ref("");
 
 // 选中的 workId
-const selectedWorkId = ref("");
+const selectedWork = ref("");
 
 // 数据：WorkList
 const workList = ref([]);
+
+// 点击下载输入模板
+const clickDownloadInputTemplate = () => {
+  if (selectedWork.value !== "") {
+    window.open(selectedWork.value.input_template_url);
+  } else {
+    ElMessage("Select a work first");
+  }
+};
+
+const click_viewLog = () => {
+  ElMessage("Comming soon...");
+};
 
 // 生命周期函数
 onMounted(async () => {
@@ -70,12 +85,12 @@ onMounted(async () => {
 // 显示在 work-select 上的选项
 const workSelectOptions = computed(() =>
   workList.value.map(work => {
-    return { value: work.objectId, label: work.name };
+    return { value: work, label: work.name };
   })
 );
 
 watchEffect(() => {
-  console.log("selectedWorkId", selectedWorkId.value);
+  console.log("selectedWork", selectedWork.value);
 });
 
 // 输入事件：上传文件发生改变
@@ -161,9 +176,10 @@ const inputFileChanged = async event => {
     .view-log-btn {
       background: black;
       color: white;
-      cursor: pointer;
+      cursor: not-allowed;
       padding: 5px;
       font-size: 13px;
+      opacity: 0.15;
     }
   }
 
