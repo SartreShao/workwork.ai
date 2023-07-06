@@ -33,7 +33,7 @@
           :value="item.value"
         />
       </el-select>
-      <div class="view-log-btn" @click="click_viewLog">Use API</div>
+      <div class="use-api-btn" @click="click_useAPI">Use API</div>
     </div>
 
     <!-- Onput Container -->
@@ -89,6 +89,14 @@ const click_start = () => {
   if (inputData.value === "") {
     ElMessage("Upload a input file");
     return;
+  }
+};
+
+const click_useAPI = () => {
+  if (selectedWork.value !== "") {
+    ElMessage(selectedWork.value.work_api);
+  } else {
+    ElMessage("Select a work first");
   }
 };
 
@@ -172,10 +180,10 @@ const inputFileChanged = async event => {
     .work-select {
       width: 350px;
     }
-    .view-log-btn {
+    .use-api-btn {
       background: black;
       color: white;
-      cursor: not-allowed;
+      cursor: pointer;
       padding: 5px;
       font-size: 13px;
       display: flex;
