@@ -1,6 +1,14 @@
 import AV from "leancloud-storage";
+import axios from "axios";
 
 const Work = AV.Object.extend("Work");
+
+// 是否为生产环境
+const isProdction = false;
+
+const TEST_API = "http://localhost:3000";
+const PRODCUTION_API = "https://workwork.ai";
+const SERVER_API = isProdction ? PRODCUTION_API : TEST_API;
 
 const getWorkList = async () => {
   try {
@@ -14,6 +22,21 @@ const getWorkList = async () => {
   }
 };
 
+const startTask = async (inputData, work) => {
+  try {
+    const response = await axios.post(`${SERVER_API}/task`, {
+      input_data: inputData,
+      work: work
+    });
+    console.log("startTask success", result);
+    return response.data;
+  } catch (error) {
+    console.log("startTask failure", error);
+    throw error;
+  }
+};
+
 export default {
-  getWorkList
+  getWorkList,
+  startTask
 };
