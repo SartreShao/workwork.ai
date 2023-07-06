@@ -4,7 +4,7 @@ import axios from "axios";
 const Work = AV.Object.extend("Work");
 
 // 是否为生产环境
-const isProdction = false;
+const isProdction = true;
 
 const TEST_API = "http://localhost:3000";
 const PRODCUTION_API = "https://workwork.ai";

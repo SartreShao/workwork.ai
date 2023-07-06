@@ -46,7 +46,7 @@
     </div>
 
     <!-- Control Button -->
-    <div class="task-button" @click="click_start">Start</div>
+    <div class="task-button" @click="click_start">{{ buttonStatus }}</div>
   </div>
 </template>
 
@@ -73,6 +73,9 @@ const inputData = ref("");
 // 输出文件下载地址
 const outputDownloadUrl = ref("");
 
+// 按钮文字
+const buttonStatus = ref("Start");
+
 // 点击下载输入模板
 const clickDownloadInputTemplate = () => {
   if (selectedWork.value !== "") {
@@ -96,14 +99,28 @@ const click_viewLog = () => {
   ElMessage("Comming soon...");
 };
 
-const click_start = () => {
-  if (selectedWork.value === "") {
-    ElMessage("Select a work first");
-    return;
-  }
-  if (inputData.value === "") {
-    ElMessage("Upload a input file");
-    return;
+const click_start = async () => {
+  if (buttonStatus.value === "Start") {
+    if (selectedWork.value === "") {
+      ElMessage("Select a work first");
+      return;
+    }
+    if (inputData.value === "") {
+      ElMessage("Upload a input file");
+      return;
+    }
+
+    try {
+      buttonStatus.value = "Working";
+      const result = await Api.startTask(inputData.value, selectedWork.value);
+      buttonStatus.value = "Start";
+      ElMessage(result);
+    } catch (error) {
+      buttonStatus.value = "Start";
+      ElMessage("error" + error);
+    }
+  } else if (buttonStatus.value === "Working") {
+    ElMessage("I'm working! Don't click me!");
   }
 };
 
@@ -144,7 +161,8 @@ const inputFileChanged = async event => {
       Papa.parse(e.target.result, {
         header: true,
         complete: function (results) {
-          console.log(results.data);
+          inputData.value = results.data;
+          console.log("inputData changed", results.data);
         }
       });
     };
