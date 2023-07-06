@@ -28,7 +28,7 @@ const startTask = async (inputData, work) => {
       input_data: inputData,
       work: work
     });
-    console.log("startTask success", result);
+    console.log("startTask success", response.data);
     return response.data;
   } catch (error) {
     console.log("startTask failure", error);

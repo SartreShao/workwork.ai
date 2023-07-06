@@ -114,7 +114,8 @@ const click_start = async () => {
       buttonStatus.value = "Working";
       const result = await Api.startTask(inputData.value, selectedWork.value);
       buttonStatus.value = "Start";
-      ElMessage(result);
+      console.log("result", result);
+      ElMessage(JSON.stringify(result));
     } catch (error) {
       buttonStatus.value = "Start";
       ElMessage("error" + error);
