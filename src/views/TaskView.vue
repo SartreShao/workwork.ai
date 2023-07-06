@@ -40,7 +40,7 @@
     <div class="output-container">
       <div class="output-title">Output</div>
       <div class="output-file" @click="click_downloadOutputFile">
-        Download Output File
+        {{ downloadButtonText }}
       </div>
       <div class="view-log-btn" @click="click_viewLog">View Log</div>
     </div>
@@ -75,6 +75,12 @@ const outputDownloadUrl = ref("");
 
 // 按钮文字
 const buttonStatus = ref("Start");
+
+const downloadButtonText = computed(() =>
+  outputDownloadUrl.value
+    ? "Click to Download Result.csv"
+    : "Output CSV Will Be There"
+);
 
 // 点击下载输入模板
 const clickDownloadInputTemplate = () => {
