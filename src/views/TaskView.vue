@@ -39,7 +39,9 @@
     <!-- Onput Container -->
     <div class="output-container">
       <div class="output-title">Output</div>
-      <div class="output-file">Download Output File</div>
+      <div class="output-file" @click="click_downloadOutputFile">
+        Download Output File
+      </div>
       <div class="view-log-btn" @click="click_viewLog">View Log</div>
     </div>
 
@@ -68,6 +70,9 @@ const workList = ref([]);
 // 数据：inputData
 const inputData = ref("");
 
+// 输出文件下载地址
+const outputDownloadUrl = ref("");
+
 // 点击下载输入模板
 const clickDownloadInputTemplate = () => {
   if (selectedWork.value !== "") {
@@ -77,6 +82,16 @@ const clickDownloadInputTemplate = () => {
   }
 };
 
+// 点击下载输出文件
+const click_downloadOutputFile = () => {
+  if (outputDownloadUrl.value === "") {
+    ElMessage("Nothing to download...");
+  } else {
+    window.open(outputDownloadUrl.value);
+  }
+};
+
+// 点击查看日志
 const click_viewLog = () => {
   ElMessage("Comming soon...");
 };
@@ -92,6 +107,7 @@ const click_start = () => {
   }
 };
 
+// 点击使用 API
 const click_useAPI = () => {
   if (selectedWork.value !== "") {
     ElMessage(selectedWork.value.work_api);
