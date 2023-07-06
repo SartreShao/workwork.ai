@@ -33,6 +33,7 @@
           :value="item.value"
         />
       </el-select>
+      <div class="view-log-btn" @click="click_viewLog">Use API</div>
     </div>
 
     <!-- Onput Container -->
@@ -43,7 +44,7 @@
     </div>
 
     <!-- Control Button -->
-    <div class="task-button">Start</div>
+    <div class="task-button" @click="click_start">Start</div>
   </div>
 </template>
 
@@ -64,6 +65,9 @@ const selectedWork = ref("");
 // 数据：WorkList
 const workList = ref([]);
 
+// 数据：inputData
+const inputData = ref("");
+
 // 点击下载输入模板
 const clickDownloadInputTemplate = () => {
   if (selectedWork.value !== "") {
@@ -75,6 +79,17 @@ const clickDownloadInputTemplate = () => {
 
 const click_viewLog = () => {
   ElMessage("Comming soon...");
+};
+
+const click_start = () => {
+  if (selectedWork.value === "") {
+    ElMessage("Select a work first");
+    return;
+  }
+  if (inputData.value === "") {
+    ElMessage("Upload a input file");
+    return;
+  }
 };
 
 // 生命周期函数
@@ -89,8 +104,11 @@ const workSelectOptions = computed(() =>
   })
 );
 
+// 选择的 Work 更新了
 watchEffect(() => {
   console.log("selectedWork", selectedWork.value);
+  // 清空输入
+  inputData.value = "";
 });
 
 // 输入事件：上传文件发生改变
@@ -152,7 +170,17 @@ const inputFileChanged = async event => {
       font-weight: bold;
     }
     .work-select {
-      width: 482px;
+      width: 350px;
+    }
+    .view-log-btn {
+      background: black;
+      color: white;
+      cursor: not-allowed;
+      padding: 5px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
 
@@ -179,7 +207,6 @@ const inputFileChanged = async event => {
       cursor: not-allowed;
       padding: 5px;
       font-size: 13px;
-      opacity: 0.15;
     }
   }
 
