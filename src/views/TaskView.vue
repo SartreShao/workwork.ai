@@ -115,7 +115,12 @@ const click_start = async () => {
       const result = await Api.startTask(inputData.value, selectedWork.value);
       buttonStatus.value = "Start";
       console.log("result", result);
-      ElMessage(JSON.stringify(result));
+      const csvString = result.csv_data;
+      // 创建一个 Blob 实例
+      const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+      outputDownloadUrl.value = URL.createObjectURL(blob);
+
+      ElMessage("Work done!");
     } catch (error) {
       buttonStatus.value = "Start";
       ElMessage("error" + error);
