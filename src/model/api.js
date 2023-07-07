@@ -7,7 +7,7 @@ const Work = AV.Object.extend("Work");
 const isProdction = true;
 
 const TEST_API = "http://localhost:3000";
-const PRODCUTION_API = "https://workwork.ai";
+const PRODCUTION_API = "https://task.evaai.me";
 const SERVER_API = isProdction ? PRODCUTION_API : TEST_API;
 
 const getWorkList = async () => {
