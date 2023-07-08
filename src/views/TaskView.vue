@@ -1,7 +1,7 @@
 <template>
   <div class="task-container">
     <!-- Task ID -->
-    <div class="task-id">Eva Task {{ taskId }}</div>
+    <div class="task-id">Task {{ taskId }}</div>
 
     <!-- Input Container -->
     <div class="input-container">
@@ -23,7 +23,7 @@
       <div class="work-title">Work</div>
       <el-select
         class="work-select"
-        v-model="selectedWork"
+        v-model="selectedWorkId"
         placeholder="Select Work"
       >
         <el-option
@@ -62,7 +62,18 @@ const inputCsv = ref(null);
 const taskId = ref("");
 
 // 选中的 workId
-const selectedWork = ref("");
+const selectedWorkId = ref("");
+
+// 选中的 work
+const selectedWork = computed(() => {
+  let targetWork;
+  workList.value.forEach(work => {
+    if (work.objectId === selectedWorkId.value) {
+      targetWork = work;
+    }
+  });
+  return targetWork;
+});
 
 // 数据：WorkList
 const workList = ref([]);
@@ -153,7 +164,7 @@ onMounted(async () => {
 // 显示在 work-select 上的选项
 const workSelectOptions = computed(() =>
   workList.value.map(work => {
-    return { value: work, label: work.name };
+    return { value: work.objectId, label: work.name };
   })
 );
 

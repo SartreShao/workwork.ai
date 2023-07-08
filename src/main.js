@@ -13,7 +13,7 @@ import "element-plus/dist/index.css";
 AV.init({
   appId: "ycWUAGQsXBV4Ij6HHTCkvyob-MdYXbMMI",
   appKey: "1gJusZZMpXrRE03gzGcqKjk5",
-  serverURL: "https://task-api.evaai.me"
+  serverURL: "https://api.workwork.ai"
 });
 
 const app = createApp(App);
