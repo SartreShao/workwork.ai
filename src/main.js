@@ -11,8 +11,8 @@ import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
 
 AV.init({
-  appId: "ycWUAGQsXBV4Ij6HHTCkvyob-MdYXbMMI",
-  appKey: "1gJusZZMpXrRE03gzGcqKjk5",
+  appId: "xy6ZvNM2ptnVqkJY0OpY1VRE-MdYXbMMI",
+  appKey: "MtJrnsD5dorgFwtaX5084eE7",
   serverURL: "https://api.workwork.ai"
 });
 
