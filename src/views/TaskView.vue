@@ -81,7 +81,7 @@ let book = `第一部分 智人征服世界
 
 function splitChapters(book) {
   let chapters = book.split(
-    /(第\s*[\d|\p{Script=Han}一二三四五六七八九十百千万亿兆]+\s*章)/g
+    /(\s第\s*[\d|\p{Script=Han}一二三四五六七八九十百千万亿兆]+\s*章)/g
   );
   // 通过正则表达式我们已经可以正确地分割章节，但是我们还需要重新组合章节名和章节内容
   let formattedChapters = [];
@@ -213,24 +213,25 @@ watchEffect(() => {
   // 清空输入
   inputData.value = "";
 });
+
 const generateAndDownloadZip = async (chapters, fileName) => {
   const zip = new JSZip();
 
   // 将 chapters 数组中的每一个字符串作为单独的.txt文件加入到zip文件
   chapters.forEach((item, index) => {
-    console.log(
-      `[${index}] ${item.substring(0, 10)}.txt`
-    );
-    zip.file(
-      `[${index}] ${item.substring(0, 10)}.txt`,
-      item
-    );
+    console.log(`[${index}] ${item.substring(0, 10)}.txt`);
+    zip.file(`[${index}] ${item.substring(0, 10)}.txt`, item);
   });
 
   // 生成zip文件并在客户端下载
   const content = await zip.generateAsync({ type: "blob" });
   saveAs(content, `章节拆分_${fileName}.zip`);
 };
+
+// 章节过滤器
+const chapterFilter = (chapters, minWordCount) =>
+  chapters.filter(chapter => new Blob([chapter]).size >= minWordCount);
+
 // 输入事件：上传文件发生改变
 const inputFileChanged = async event => {
   const file = event.target.files[0];
@@ -255,7 +256,7 @@ const inputFileChanged = async event => {
           const result = await mammoth.extractRawText({
             arrayBuffer: arrayBuffer
           });
-          const chapters = splitChapters(result.value);
+          const chapters = chapterFilter(splitChapters(result.value), 1024);
           console.log("result", chapters); // 将转换结果赋值给 content
           generateAndDownloadZip(chapters, file.name);
         } catch (error) {
