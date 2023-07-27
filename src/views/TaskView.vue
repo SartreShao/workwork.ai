@@ -56,6 +56,8 @@ import Papa from "papaparse";
 import Api from "@/model/api.js";
 import { ElMessage } from "element-plus";
 import * as mammoth from "mammoth";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 
 let book = `第一部分 智人征服世界
 人类与其他动物有何不同？
@@ -211,6 +213,24 @@ watchEffect(() => {
   // 清空输入
   inputData.value = "";
 });
+const generateAndDownloadZip = async (chapters, fileName) => {
+  const zip = new JSZip();
+
+  // 将 chapters 数组中的每一个字符串作为单独的.txt文件加入到zip文件
+  chapters.forEach((item, index) => {
+    console.log(
+      `[${index}] ${item.substring(0, 10)}.txt`
+    );
+    zip.file(
+      `[${index}] ${item.substring(0, 10)}.txt`,
+      item
+    );
+  });
+
+  // 生成zip文件并在客户端下载
+  const content = await zip.generateAsync({ type: "blob" });
+  saveAs(content, `章节拆分_${fileName}.zip`);
+};
 // 输入事件：上传文件发生改变
 const inputFileChanged = async event => {
   const file = event.target.files[0];
@@ -235,7 +255,9 @@ const inputFileChanged = async event => {
           const result = await mammoth.extractRawText({
             arrayBuffer: arrayBuffer
           });
-          console.log("result", splitChapters(result.value)); // 将转换结果赋值给 content
+          const chapters = splitChapters(result.value);
+          console.log("result", chapters); // 将转换结果赋值给 content
+          generateAndDownloadZip(chapters, file.name);
         } catch (error) {
           console.error(error);
         }
@@ -243,9 +265,6 @@ const inputFileChanged = async event => {
       reader.readAsArrayBuffer(file);
     }
   }
-  // if (file) {
-
-  // }
 };
 </script>
 
