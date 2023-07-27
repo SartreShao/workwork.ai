@@ -11,7 +11,7 @@
         type="file"
         ref="inputCsv"
         @change="inputFileChanged($event)"
-        accept=".csv"
+        accept=".csv,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
       />
       <div class="download_temtplate-btn" @click="clickDownloadInputTemplate">
         Download Input Template
@@ -55,6 +55,7 @@ import { computed, ref, onMounted, watchEffect } from "vue";
 import Papa from "papaparse";
 import Api from "@/model/api.js";
 import { ElMessage } from "element-plus";
+import * as mammoth from "mammoth";
 
 let book = `第一部分 智人征服世界
 人类与其他动物有何不同？
@@ -91,7 +92,6 @@ function splitChapters(book) {
   return formattedChapters;
 }
 
-console.log(splitChapters(book));
 // Input 元素
 const inputCsv = ref(null);
 
@@ -211,23 +211,41 @@ watchEffect(() => {
   // 清空输入
   inputData.value = "";
 });
-
 // 输入事件：上传文件发生改变
 const inputFileChanged = async event => {
   const file = event.target.files[0];
   if (file) {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      Papa.parse(e.target.result, {
-        header: true,
-        complete: function (results) {
-          inputData.value = results.data;
-          console.log("inputData changed", results.data);
+    if (file.type === "text/csv") {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        Papa.parse(e.target.result, {
+          header: true,
+          complete: function (results) {
+            inputData.value = results.data;
+            console.log("inputData changed", results.data);
+          }
+        });
+      };
+      reader.readAsText(file);
+    } else {
+      const reader = new FileReader();
+      reader.onload = async event => {
+        const arrayBuffer = event.target.result;
+        try {
+          const result = await mammoth.extractRawText({
+            arrayBuffer: arrayBuffer
+          });
+          console.log("result", splitChapters(result.value)); // 将转换结果赋值给 content
+        } catch (error) {
+          console.error(error);
         }
-      });
-    };
-    reader.readAsText(file);
+      };
+      reader.readAsArrayBuffer(file);
+    }
   }
+  // if (file) {
+
+  // }
 };
 </script>
 
