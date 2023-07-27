@@ -81,15 +81,15 @@ let book = `第一部分 智人征服世界
 
 function splitChapters(book) {
   let chapters = book.split(
-    /(\s第\s*[\d|\p{Script=Han}一二三四五六七八九十百千万亿兆]+\s*章)/g
+    /(\s第\s*[\d|\p{Script=Han}一二三四五六七八九十百千万亿兆]+\s*(章|部分))/g
   );
   // 通过正则表达式我们已经可以正确地分割章节，但是我们还需要重新组合章节名和章节内容
   let formattedChapters = [];
   formattedChapters.push(chapters[0]);
-  for (let i = 1; i < chapters.length; i += 2) {
+  for (let i = 1; i < chapters.length; i += 3) {
     // 第一次循环时，我们跳过开头可能存在的空字符串
     // 将章节名和章节内容重新组合，注意这里我们需要跳过空的章节
-    formattedChapters.push(chapters[i] + chapters[i + 1]);
+    formattedChapters.push(chapters[i] + chapters[i + 2]);
   }
   return formattedChapters;
 }
