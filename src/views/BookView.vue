@@ -46,7 +46,16 @@
         </svg>
       </div>
 
-      <div class="upload-btn">上传</div>
+      <div class="upload-btn">
+        <input
+          class="csv-input"
+          type="file"
+          ref="inputCsv"
+          @change="inputFileChanged($event)"
+          accept=".csv,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        />
+        上传书本
+      </div>
     </div>
 
     <!-- 参数输入 -->
@@ -98,12 +107,18 @@
         <div class="params-text">背景音乐</div>
         <el-input class="params-input"></el-input>
       </div>
+      <div class="params-input-container">
+        <div class="params-text">是否合并章节</div>
+        <el-input class="params-input"></el-input>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
+import BookVoiceSummary from "@/viewmodel/BookVoiceSummary.js";
+
 const mode = ref("一键制作");
 
 const modeOptions = [
@@ -124,6 +139,11 @@ const modeOptions = [
     label: "文字转有声书"
   }
 ];
+
+const inputFileChanged = async event => {
+  const file = event.target.files[0];
+  BookVoiceSummary.splitChapters(file);
+};
 </script>
 
 <style lang="scss" setup>
@@ -222,6 +242,15 @@ const modeOptions = [
       font-weight: 700;
       line-height: normal;
       cursor: pointer;
+      position: relative;
+
+      .csv-input {
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        cursor: pointer;
+      }
     }
   }
 
