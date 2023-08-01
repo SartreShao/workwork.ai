@@ -50,6 +50,12 @@ function split(book) {
   return formattedChapters;
 }
 
+/**
+ * 自动拆分章节
+ * @param {*} file 
+ * @param {*} minWordCount 
+ * @param {*} replaceWord 
+ */
 const splitChapters = (file, minWordCount, replaceWord) => {
   console.log(minWordCount, replaceWord)
   const reader = new FileReader();
