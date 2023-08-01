@@ -48,6 +48,57 @@
 
       <div class="upload-btn">上传</div>
     </div>
+
+    <!-- 参数输入 -->
+    <div class="params-container">
+      <!-- 拆分章节参数 -->
+      <div class="params-input-title-container">
+        <div class="params-title">拆分章节</div>
+      </div>
+      <div class="params-input-container">
+        <div class="params-text">章节最低字数</div>
+        <el-input class="params-input"></el-input>
+      </div>
+
+      <div class="params-input-container">
+        <div class="params-text">过滤文字水印</div>
+        <el-input class="params-input"></el-input>
+      </div>
+
+      <!-- 智能改写参数 -->
+      <div class="params-input-title-container">
+        <div class="params-title">智能改写</div>
+      </div>
+      <div class="params-input-container">
+        <div class="params-text">缩写比例（0～1）</div>
+        <el-input class="params-input"></el-input>
+      </div>
+      <div class="params-input-container">
+        <div class="params-text">生成开头 Prompt</div>
+        <el-input class="params-input"></el-input>
+      </div>
+      <div class="params-input-container">
+        <div class="params-text">改写 Prompt</div>
+        <el-input class="params-input"></el-input>
+      </div>
+
+      <!-- 文字转有声书 -->
+      <div class="params-input-title-container">
+        <div class="params-title">文字转有声书</div>
+      </div>
+      <div class="params-input-container">
+        <div class="params-text">TTS音色</div>
+        <el-input class="params-input"></el-input>
+      </div>
+      <div class="params-input-container">
+        <div class="params-text">TTS速度</div>
+        <el-input class="params-input"></el-input>
+      </div>
+      <div class="params-input-container">
+        <div class="params-text">背景音乐</div>
+        <el-input class="params-input"></el-input>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -171,6 +222,45 @@ const modeOptions = [
       font-weight: 700;
       line-height: normal;
       cursor: pointer;
+    }
+  }
+
+  // 参数输入
+  .params-container {
+    margin-top: 2.6vh;
+    width: 51.48vw;
+    flex-shrink: 0;
+    padding-bottom: 3vh;
+    border-radius: 2.08vh;
+    background: #fff;
+    box-shadow: 0px 0.52vh 0.52vh 0px rgba(0, 0, 0, 0.01);
+    backdrop-filter: blur(3.9vh);
+
+    .params-input-title-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      margin: 3vh 2vw 0 2vw;
+      .params-title {
+        width: 30vw;
+        font-size: 2vh;
+        color: #3d2ab6;
+        font-weight: bold;
+      }
+    }
+    .params-input-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      margin: 1.5vh 2vw 0 2vw;
+
+      .params-text {
+        width: 30vw;
+        font-size: 1.7vh;
+        color: #3d2ab6;
+      }
     }
   }
 }
