@@ -167,7 +167,7 @@ const modeOptions = [
     justify-content: space-between;
     .selector-container {
       display: flex;
-      width: 11.72vw;
+      width: 25vw;
       height: 6.49vh;
       justify-content: center;
       align-items: center;
@@ -206,10 +206,10 @@ const modeOptions = [
     }
     .upload-btn {
       display: flex;
-      padding: 1.95vh 11.48vw;
+      width: 25vw;
+      height: 6.49vh;
       justify-content: center;
       align-items: center;
-      gap: 1.3vh;
       border-radius: 7.01vh;
       background: linear-gradient(28deg, #9d93ef 0%, #725cfd 100%);
       box-shadow: 0px 0.26vh 1.3vh 0px rgba(135, 64, 226, 0.4);
