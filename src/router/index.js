@@ -8,12 +8,12 @@ const router = createRouter({
       path: "/",
       name: "task",
       component: TaskView
+    },
+    {
+      path: "/invite",
+      name: "invite",
+      component: () => import("../views/InviteView.vue")
     }
-    // {
-    //   path: "/task",
-    //   name: "task",
-    //   component: () => import("../views/TaskView.vue")
-    // }
   ]
 });
 
