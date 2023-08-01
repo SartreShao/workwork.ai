@@ -66,12 +66,12 @@
       </div>
       <div class="params-input-container">
         <div class="params-text">章节最低字数</div>
-        <el-input class="params-input"></el-input>
+        <el-input class="params-input" v-model="minWordCount"></el-input>
       </div>
 
       <div class="params-input-container">
         <div class="params-text">过滤文字水印</div>
-        <el-input class="params-input"></el-input>
+        <el-input class="params-input" v-model="replaceWord"></el-input>
       </div>
 
       <!-- 智能改写参数 -->
@@ -121,6 +121,10 @@ import BookVoiceSummary from "@/viewmodel/BookVoiceSummary.js";
 
 const mode = ref("一键制作");
 
+const minWordCount = ref(1024);
+
+const replaceWord = ref("");
+
 const modeOptions = [
   {
     value: "一键制作",
@@ -142,7 +146,12 @@ const modeOptions = [
 
 const inputFileChanged = async event => {
   const file = event.target.files[0];
-  BookVoiceSummary.splitChapters(file);
+
+  BookVoiceSummary.splitChapters(
+    file,
+    Number(minWordCount.value),
+    replaceWord.value
+  );
 };
 </script>
 

@@ -50,7 +50,8 @@ function split(book) {
   return formattedChapters;
 }
 
-const splitChapters = (file) => {
+const splitChapters = (file, minWordCount, replaceWord) => {
+  console.log(minWordCount, replaceWord)
   const reader = new FileReader();
   reader.onload = async event => {
     const arrayBuffer = event.target.result;
@@ -58,7 +59,8 @@ const splitChapters = (file) => {
       const result = await mammoth.extractRawText({
         arrayBuffer: arrayBuffer
       });
-      const chapters = chapterFilter(split(result.value), 1024);
+      const content = replaceWord.length === 0 ? result.value : result.value.replace(new RegExp(replaceWord, 'g'), "");
+      const chapters = chapterFilter(split(content), minWordCount);
       console.log("result", chapters); // 将转换结果赋值给 content
       generateAndDownloadZip(chapters, file.name);
     } catch (error) {
