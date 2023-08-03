@@ -1,6 +1,7 @@
 import * as mammoth from "mammoth";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
+import Claude2 from "@/model/claude2.js";
 
 /**
  * 生成压缩包
@@ -35,7 +36,7 @@ const chapterFilter = (chapters, minWordCount) =>
  * @param {*} book 书籍字符串
  * @returns 
  */
-function split(book) {
+function text2Chapters(book) {
   let chapters = book.split(
     /(\s第\s*[\d|\p{Script=Han}一二三四五六七八九十百千万亿兆]+\s*(章|部分))/g
   );
@@ -50,32 +51,113 @@ function split(book) {
   return formattedChapters;
 }
 
+const readFileContent = async (file) => {
+  console.log("file name", file.name);
+  const fileType = file.name.split('.').pop().toLowerCase();
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = async event => {
+      if (fileType === 'txt') {
+        resolve(event.target.result);
+      } else {
+        const arrayBuffer = event.target.result;
+        try {
+          const result = await mammoth.extractRawText({
+            arrayBuffer: arrayBuffer
+          });
+          resolve(result.value);
+        } catch (error) {
+          reject(error);
+        }
+      }
+    };
+
+    if (fileType === 'txt') {
+      reader.readAsText(file);
+    } else {
+      reader.readAsArrayBuffer(file);
+    }
+  });
+};
+
 /**
  * 自动拆分章节
  * @param {*} file 
  * @param {*} minWordCount 
  * @param {*} replaceWord 
  */
-const splitChapters = (file, minWordCount, replaceWord) => {
+const splitChapters = async (file, minWordCount, replaceWord) => {
   console.log(minWordCount, replaceWord)
-  const reader = new FileReader();
-  reader.onload = async event => {
-    const arrayBuffer = event.target.result;
+  const result = await readFileContent(file)
+  const content = replaceWord.length === 0 ? result : result.replace(new RegExp(replaceWord, 'g'), "");
+  const chapters = chapterFilter(text2Chapters(content), minWordCount);
+  console.log("result", chapters); // 将转换结果赋值给 content
+  // smartRewrite(chapters[0], "未来简史");
+  generateAndDownloadZip(chapters, file.name);
+}
+
+/**
+ * 智能改写
+ * @param {*} file 文件 
+ * @param {*} title 
+ * @returns 
+ */
+const smartRewrite = async (file, title, usageType, rewriteRate) => {
+  const text = await readFileContent(file);
+  const conversationId = await Claude2.startConversation(usageType)
+  console.log("Claude2 会话已建立, conversationId:", conversationId)
+
+  const rewritePrompt = `
+  内容：\`\`\`${text}\`\`\`
+  
+  以上内容来自《${title}》一书，仅以我提供的文件信息作为你的输入信息
+  在进行总结概括前请仔细阅读以下要求，要理解并严格执行要求进行回答
+  语言要求：中文
+  字数要求：全文共${text.length}个汉字，请必须用${Math.floor(rewriteRate * text.length)}个汉字左右进行概括总结。
+
+  文章结构要清晰,内容要有顺序，但尽量避免出现1、2、3、4、5....或者 一、 二、三、四、五...这一类的数字标题。
+  采用讲述式的叙事风格,语言通俗易懂。使用第一人称“我们”进行叙述,语气亲切,避免使用过多学术术语。
+  讲述过程中添加大量生动具体的例子，增加文章的趣味性。
+  对一些观点在描述事实的同时要留有疑问,引导读者思考。
+  描述中提到不同要素的特征,增加形象性。
+  保持叙事流畅性和连贯性。
+  总结开头需要直接进入主题，不需要废话，不需要有类似“这部分内容主要讲了….” “这段内容讲述了…” “本文提出...”等类似的信息作为开始
+  回答的标题需要是我提供文本的标题
+  `;
+
+  let rewriteResult = ""
+  while (rewriteResult === "" && rewriteResult !== null) {
+    console.log("开始第一轮重写")
     try {
-      const result = await mammoth.extractRawText({
-        arrayBuffer: arrayBuffer
-      });
-      const content = replaceWord.length === 0 ? result.value : result.value.replace(new RegExp(replaceWord, 'g'), "");
-      const chapters = chapterFilter(split(content), minWordCount);
-      console.log("result", chapters); // 将转换结果赋值给 content
-      generateAndDownloadZip(chapters, file.name);
+      rewriteResult = await Claude2.sendMessage(conversationId, rewritePrompt);
+      console.log("第一轮结果", rewriteResult)
     } catch (error) {
-      console.error(error);
+      console.log("第一轮重写失败", error)
+      console.log("重试", error)
     }
-  };
-  reader.readAsArrayBuffer(file);
+  }
+
+
+  while (rewriteResult.length <= text.length * rewriteRate) {
+    try {
+      console.log("预期字数", text.length * rewriteRate)
+      console.log("实际字数", rewriteResult.length)
+      const checkRewritePrompt = `你的回答字数远远不足我的要求，现在的回复是${rewriteResult.length}字，我要求的是${Math.floor(rewriteRate * text.length)}字，我相信原文中一定有很多精彩的内容，丰富的案例和更多可以引人深思的问题值得你添加在你的总结中，你可以继续增加一些信息作为你的回答，希望下一个回答你的字数符合我的要求`
+
+      rewriteResult = await Claude2.sendMessage(conversationId, checkRewritePrompt);
+      console.log("改写结果", rewriteResult);
+    } catch (error) {
+      console.log(error);
+      console.log("重试")
+    }
+  }
+
+  console.log("完成改写，字数以达原文的 1/20", rewriteResult.length)
+  await generateAndDownloadZip([rewriteResult], "改写结果")
+  return rewriteResult
 }
 
 export default {
-  splitChapters
+  splitChapters, smartRewrite
 }

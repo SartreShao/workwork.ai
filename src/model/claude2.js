@@ -1,11 +1,11 @@
 import axios from "axios";
 
-const USAGE_TYPE = 10024;
 
 /**
  * 开始对话，返回 conversationId
  */
-const startConversation = async () => {
+const startConversation = async (usageType) => {
+  console.log("usageType: " + usageType)
   try {
     const response = await axios({
       method: 'post',
@@ -18,15 +18,14 @@ const startConversation = async () => {
           token: ""
         },
         params: {
-          usageType: USAGE_TYPE
+          usageType: usageType
         }
       }
     })
-
-    const conversationId = response.data.conversationId;
+    console.log("startConversation", response.data.data.conversationId)
+    const conversationId = response.data.data.conversationId;
     return conversationId;
   } catch (error) {
-    console.error(error)
     throw error;
   }
 }
@@ -56,10 +55,10 @@ const sendMessage = async (conversationId, message) => {
         }
       }
     })
+    console.log("sendMessage", response.data)
     const data = response.data.data;
     return data;
   } catch (error) {
-    console.error(error);
     throw error;
   }
 }

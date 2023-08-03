@@ -52,7 +52,7 @@
           type="file"
           ref="inputCsv"
           @change="inputFileChanged($event)"
-          accept=".csv,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          accept=".txt,.csv,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         />
         上传书本
       </div>
@@ -80,15 +80,15 @@
       </div>
       <div class="params-input-container">
         <div class="params-text">缩写比例（0～1）</div>
-        <el-input class="params-input"></el-input>
+        <el-input class="params-input" v-model="rewriteRate"></el-input>
       </div>
       <div class="params-input-container">
-        <div class="params-text">生成开头 Prompt</div>
-        <el-input class="params-input"></el-input>
+        <div class="params-text">书名</div>
+        <el-input class="params-input" v-model="bookTitle"></el-input>
       </div>
       <div class="params-input-container">
-        <div class="params-text">改写 Prompt</div>
-        <el-input class="params-input"></el-input>
+        <div class="params-text">Claude UsageType</div>
+        <el-input class="params-input" v-model="usageType"></el-input>
       </div>
 
       <!-- 文字转有声书 -->
@@ -119,11 +119,17 @@
 import { ref } from "vue";
 import BookVoiceSummary from "@/viewmodel/BookVoiceSummary.js";
 
-const mode = ref("一键制作");
+const mode = ref("智能改写");
 
 const minWordCount = ref(1024);
 
 const replaceWord = ref("");
+
+const bookTitle = ref("");
+
+const usageType = ref(1);
+
+const rewriteRate = ref(0.1);
 
 const modeOptions = [
   {
@@ -146,12 +152,29 @@ const modeOptions = [
 
 const inputFileChanged = async event => {
   const file = event.target.files[0];
-
-  BookVoiceSummary.splitChapters(
-    file,
-    Number(minWordCount.value),
-    replaceWord.value
-  );
+  console.log("mode", mode.value);
+  if (file) {
+    if (mode.value === "一键制作") {
+      // doing nothing
+      alert("暂无功能");
+    } else if (mode.value === "拆分章节") {
+      await BookVoiceSummary.splitChapters(
+        file,
+        Number(minWordCount.value),
+        replaceWord.value
+      );
+    } else if (mode.value === "智能改写") {
+      await BookVoiceSummary.smartRewrite(
+        file,
+        bookTitle.value,
+        Number(usageType.value),
+        Number(rewriteRate.value)
+      );
+    } else if (mode.value === "文字转有声书") {
+      // doing nothing
+      alert("暂无功能");
+    }
+  }
 };
 </script>
 
