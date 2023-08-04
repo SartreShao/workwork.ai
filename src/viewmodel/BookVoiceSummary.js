@@ -34,6 +34,7 @@ const chapterFilter = (chapters, minWordCount) =>
 /**
  * 拆分章节
  * @param {*} book 书籍字符串
+ * @param {*} filterNewlineAfterNonPunctuation 是否过滤非标点符号后的换行符
  * @returns 
  */
 function text2Chapters(book) {
@@ -50,6 +51,14 @@ function text2Chapters(book) {
   }
   return formattedChapters;
 }
+
+
+/**
+ * 过滤非标点符号后的换行符
+ * @param {*} text 
+ */
+const filterNewlineAfterNonPunctuation = (text) => text.replace(/[\s\r\n]+/g, '');
+
 
 const readFileContent = async (file) => {
   console.log("file name", file.name);
@@ -87,13 +96,18 @@ const readFileContent = async (file) => {
  * @param {*} minWordCount 
  * @param {*} replaceWord 
  */
-const splitChapters = async (file, minWordCount, replaceWord) => {
+const splitChapters = async (file, minWordCount, replaceWord, isFilterNewline) => {
   console.log(minWordCount, replaceWord)
   const result = await readFileContent(file)
   const content = replaceWord.length === 0 ? result : result.replace(new RegExp(replaceWord, 'g'), "");
-  const chapters = chapterFilter(text2Chapters(content), minWordCount);
-  console.log("result", chapters); // 将转换结果赋值给 content
-  // smartRewrite(chapters[0], "未来简史");
+  let chapters = chapterFilter(text2Chapters(content), minWordCount);
+  console.log("result", chapters);
+
+  // 是否过滤非标点符号后的换行符号
+  if (isFilterNewline) {
+    chapters = chapters.map(chapter => filterNewlineAfterNonPunctuation(chapter))
+  }
+
   generateAndDownloadZip(chapters, file.name);
 }
 

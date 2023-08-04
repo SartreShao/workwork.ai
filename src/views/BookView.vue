@@ -74,6 +74,16 @@
         <el-input class="params-input" v-model="replaceWord"></el-input>
       </div>
 
+      <div class="params-input-container">
+        <div class="params-text">过滤全部换行符&空格</div>
+        <el-switch
+          class="params-input"
+          v-model="isFilterNewline"
+          active-text="过滤"
+          inactive-text="不过滤"
+        />
+      </div>
+
       <!-- 智能改写参数 -->
       <div class="params-input-title-container">
         <div class="params-title">智能改写</div>
@@ -119,7 +129,7 @@
 import { ref } from "vue";
 import BookVoiceSummary from "@/viewmodel/BookVoiceSummary.js";
 
-const mode = ref("智能改写");
+const mode = ref("拆分章节");
 
 const minWordCount = ref(1024);
 
@@ -130,6 +140,8 @@ const bookTitle = ref("");
 const usageType = ref(1);
 
 const rewriteRate = ref(0.1);
+
+const isFilterNewline = ref(true);
 
 const modeOptions = [
   {
@@ -161,7 +173,8 @@ const inputFileChanged = async event => {
       await BookVoiceSummary.splitChapters(
         file,
         Number(minWordCount.value),
-        replaceWord.value
+        replaceWord.value,
+        isFilterNewline.value
       );
     } else if (mode.value === "智能改写") {
       await BookVoiceSummary.smartRewrite(
