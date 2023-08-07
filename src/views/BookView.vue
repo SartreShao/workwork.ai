@@ -258,7 +258,7 @@ const inputFileChanged = async event => {
       .selected-mode {
         color: #3d2ab6;
         /* 大按钮 */
-        font-size: 2.21vh;
+        font-size: 2vh;
         font-style: normal;
         font-weight: 700;
         line-height: normal;
@@ -282,7 +282,7 @@ const inputFileChanged = async event => {
       color: #fff;
       /* 大按钮 */
       font-family: SF Pro Display;
-      font-size: 2.21vh;
+      font-size: 2vh;
       font-style: normal;
       font-weight: 700;
       line-height: normal;
